@@ -1,15 +1,20 @@
-import App from 'App.js'
-
-import MazeGenerator from 'components/MazeGenerator'
+import App from '@src/App'
+import Landing from '@components/Landing'
+import MazeGenerator from '@components/MazeGenerator'
 
 const routes = [
   {
     component: App,
     routes: [
       {
-        path: '/maze-generator',
+        component: Landing,
+        path: '/',
         exact: true,
-        component: MazeGenerator
+      },
+      {
+        component: MazeGenerator,
+        path: '/maze-generator',
+        exact: true
       }
     ]
   }
