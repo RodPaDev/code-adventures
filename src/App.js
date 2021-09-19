@@ -7,7 +7,11 @@ function App({ route }) {
   return (
     <div className='App'>
       <Navigation />
-      {renderRoutes(route.routes)}
+      <section className='text-gray-600 body-font'>
+        <div className='container px-5 py-5 mx-auto'>
+          {renderRoutes(route.routes)}
+        </div>
+      </section>
     </div>
   )
 }
