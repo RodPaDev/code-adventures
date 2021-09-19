@@ -1,16 +1,17 @@
-class Maze {
+class MazeGrid {
   constructor(canvas, cellSize = 5) {
+    this.id = Math.random().toString(36).substr(2, 5)
     this.canvas = canvas
-    this.context = canvas.getthis.Context('2d')
+    this.context = canvas.getContext('2d')
     this.cellSize = cellSize
     this.columns = Math.floor(canvas.width / cellSize)
     this.rows = Math.floor(canvas.height / cellSize)
-
+    this.stack = []
     this.grid = []
     this.currentCell = null
     this.hasStarted = false
     this.hasFinished = false
-    this.columns = Math.floor()
+    this.init()
   }
 
   init() {
@@ -19,8 +20,7 @@ class Maze {
     while (x < this.rows) {
       y = 0
       while (y < this.columns) {
-        const cell = new Cell(x, y)
-        this.grid.push(cell)
+        this.grid.push(new MazeCell(x, y))
         y += 1
       }
       x += 1
@@ -29,18 +29,33 @@ class Maze {
     this.currentCell = this.grid[0]
   }
 
+  reset(cellSize) {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.cellSize = cellSize
+    this.stack = []
+    this.grid = []
+    this.currentCell = null
+    this.hasStarted = false
+    this.hasFinished = false
+    this.init()
+  }
+
   draw() {
+    this.hasStarted = true
     this.context.fillStyle = 'gray'
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
     for (let cell of this.grid) {
-      cell.draw(!this.hasFinished)
+      cell.draw(this.context, this.cellSize, !this.hasFinished)
     }
 
     this.currentCell.visited = true
-    this.currentCell.highlight(!this.hasFinished)
-    const next = this.currentCell.checkAdjacentCell()
+    this.currentCell.highlight(this.context, this.cellSize, !this.hasFinished)
+    const next = this.currentCell.checkAdjacentCell(
+      this.grid,
+      this.columns,
+      this.rows
+    )
     if (next) {
-      this.hasStarted = true
       next.visited = true
       this.stack.push(this.currentCell)
       this.removeWalls(this.currentCell, next)
@@ -76,31 +91,29 @@ class Maze {
     }
   }
 }
-
-class Cell extends Maze {
-  constructor(row, column, canvas, cellSize) {
-    super(canvas, cellSize)
+class MazeCell {
+  constructor(row, column) {
     this.row = row
     this.column = column
     this.walls = { top: true, right: true, bottom: true, left: true }
     this.visited = false
   }
 
-  highlight(render) {
-    const x = this.row * this.cellSize
-    const y = this.column * this.cellSize
+  highlight(context, cellSize, render) {
+    const x = this.row * cellSize
+    const y = this.column * cellSize
     if (render) {
-      this.context.fillStyle = 'rgba(127, 255, 0, 0.5)'
-      this.context.fillRect(x, y, this.cellSize, this.cellSize)
+      context.fillStyle = 'rgba(127, 255, 0, 0.5)'
+      context.fillRect(x, y, cellSize, cellSize)
     }
   }
 
-  checkAdjacentCell() {
+  checkAdjacentCell(grid, columns, rows) {
     let unvisited = []
-    const top = this.grid[this.index(this.row, this.column - 1)]
-    const right = this.grid[this.index(this.row + 1, this.column)]
-    const bottom = this.grid[this.index(this.row, this.column + 1)]
-    const left = this.grid[this.index(this.row - 1, this.column)]
+    const top = grid[this.index(this.row, this.column - 1, columns, rows)]
+    const right = grid[this.index(this.row + 1, this.column, columns, rows)]
+    const bottom = grid[this.index(this.row, this.column + 1, columns, rows)]
+    const left = grid[this.index(this.row - 1, this.column, columns, rows)]
 
     if (top && !top.visited) unvisited.push(top)
     if (right && !right.visited) unvisited.push(right)
@@ -111,39 +124,41 @@ class Cell extends Maze {
     return unvisited.length > 0 ? unvisited[randomIndex] : null
   }
 
-  draw(render) {
-    const x = this.row * this.cellSize
-    const y = this.column * this.cellSize
+  draw(context, cellSize, render = true) {
+    const x = this.row * cellSize
+    const y = this.column * cellSize
 
     const wallLines = {
-      top: () => this.line(x, y, x + this.cellSize, y),
+      top: () => this.line(x, y, x + cellSize, y, context),
       right: () =>
-        this.line(x + this.cellSize, y, x + this.cellSize, y + this.cellSize),
-      bottom: () => this.line(x, y + this.cellSize, x, y + this.cellSize),
-      left: () => this.line(x, y + this.cellSize, x, y)
+        this.line(x + cellSize, y, x + cellSize, y + cellSize, context),
+      bottom: () => this.line(x, y + cellSize, x, y + cellSize, context),
+      left: () => this.line(x, y + cellSize, x, y, context)
     }
 
-    this.context.strokeStyle = 'black'
-    this.context.beginPath()
+    context.strokeStyle = 'black'
+    context.beginPath()
     for (const [side, isToDraw] of Object.entries(this.walls)) {
       if (isToDraw) wallLines[side]()
     }
-    this.context.stroke()
+    context.stroke()
 
     if (render && this.visited) {
-      this.context.fillStyle = 'rgba(259,139,32,0.50)'
-      this.context.fillRect(x, y, this.cellSize, this.cellSize)
+      context.fillStyle = 'rgba(259,139,32,0.50)'
+      context.fillRect(x, y, cellSize, cellSize)
     }
   }
 
-  line(startX, startY, a, b) {
-    this.context.moveTo(startX, startY)
-    this.context.lineTo(a, b)
+  line(startX, startY, a, b, context) {
+    context.moveTo(startX, startY)
+    context.lineTo(a, b)
   }
 
-  index(row, column) {
+  index(row, column, columns, rows) {
     const outOfBounds =
-      column < 0 || row < 0 || column > this.columns - 1 || row > this.rows - 1
-    return !outOfBounds ? column + row * this.columns : -1
+      column < 0 || row < 0 || column > columns - 1 || row > rows - 1
+    return !outOfBounds ? column + row * columns : -1
   }
 }
+
+export default MazeGrid

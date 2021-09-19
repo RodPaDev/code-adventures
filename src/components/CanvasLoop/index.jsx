@@ -1,44 +1,62 @@
 import PropTypes from 'prop-types'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-function loop(hasStarted, hasFinished, draw, fps) {
-  let lastTimestamp = 0
-  function update(timestamp) {
-    if (!hasFinished) {
-      requestAnimationFrame(update)
-      if (fps != 0 && timestamp - lastTimestamp < 1000 / fps) return
-      draw()
-      lastTimestamp = timestamp
-    } else if (hasStarted && hasFinished) {
-      draw()
-    }
-  }
-  update()
-}
+let keepRunning = false
 
 const CanvasLoop = ({
   width,
   height,
   forwardedRef,
-  hasStarted,
-  hasFinished,
+  reset,
   draw,
   noLoop = false,
-  redrawText = 'Redraw'
+  drawText = 'Draw',
+  resetText = 'Reset'
 }) => {
   const [framesPerSecond, setFramesPerSecond] = useState(60)
-
-  useEffect(() => {}, [hasStarted, hasFinished, draw, noLoop])
+  const [isRunning, setIsRunning ] = useState(false)
 
   const handleRange = e => {
     e.preventDefault()
     setFramesPerSecond(e.currentTarget.value)
   }
 
+  const loop = (draw, fps) => {
+    let lastTimestamp = 0
+    let hasStarted = false
+    let hasFinished = false
+    function update(timestamp) {
+      console.log(keepRunning)
+      if (keepRunning && !hasFinished) {
+        requestAnimationFrame(update)
+        if (fps != 0 && timestamp - lastTimestamp < 1000 / fps) return
+
+        let [isStart, isFinished] = draw()
+        hasStarted = isStart
+        hasFinished = isFinished
+        lastTimestamp = timestamp
+      } else if (hasStarted && hasFinished) {
+        draw()
+        keepRunning = false
+      }
+    }
+    update()
+  }
+
   const redrawCanvas = e => {
     e.preventDefault()
     if (noLoop) return draw()
-    loop(hasStarted, hasFinished, draw, framesPerSecond)
+    if (keepRunning) {
+      reset()
+      keepRunning = false
+      draw()
+      setIsRunning(false)
+    } else {
+      reset()
+      keepRunning = true
+      setIsRunning(true)
+      loop(draw, framesPerSecond)
+    }
   }
 
   return (
@@ -68,7 +86,7 @@ const CanvasLoop = ({
           className='text-white bg-yellow-500 border-0 py-2 px-6 focus:outline-none hover:bg-yellow-600 rounded'
           onClick={redrawCanvas}
         >
-          {redrawText}
+          {!isRunning ? drawText : resetText}
         </button>
       </div>
       <canvas
@@ -88,10 +106,10 @@ CanvasLoop.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   draw: PropTypes.func.isRequired,
-  hasStarted: PropTypes.bool,
-  hasFinished: PropTypes.bool,
+  reset: PropTypes.func.isRequired,
+  resetText: PropTypes.string.isRequired,
   noLoop: PropTypes.bool,
-  redrawText: PropTypes.string,
+  drawText: PropTypes.string,
   forwardedRef: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Element) })
