@@ -7,7 +7,7 @@ const routes = [
     component: App,
     routes: [
       {
-        path: '/maze-generators',
+        path: '/maze-generator',
         exact: true,
         component: MazeGenerator
       }
