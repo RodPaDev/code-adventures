@@ -1,10 +1,10 @@
 import { Fragment } from 'react'
 
 import Featured from './Shared/Featured'
-import adventureSvg from 'src/assets/svg/adventure.svg'
-import githubSvg from 'src/assets/svg/github.svg'
-import linkedinSvg from 'src/assets/svg/linkedin.svg'
-import twitterSvg from 'src/assets/svg/twitter.svg'
+import adventureSvg from '@src/assets/svg/adventure.svg'
+import githubSvg from '@src/assets/svg/github.svg'
+import linkedinSvg from '@src/assets/svg/linkedin.svg'
+import twitterSvg from '@src/assets/svg/twitter.svg'
 import SocialLink from './Shared/SocialLink'
 
 const Landing = () => {

@@ -1,6 +1,20 @@
-import App from '@src/App'
-import Landing from '@components/Landing'
-import MazeGenerator from '@components/MazeGenerator'
+import { lazy } from 'react'
+
+const Landing = lazy(() =>
+  import(
+    /* webpackPreload: true */ /* webpackChunkName: "Landing" */ '@components/Landing'
+  )
+)
+const App = lazy(() =>
+  import(
+    /* webpackPreload: true */ /* webpackChunkName: "App" */ '@components/App'
+  )
+)
+const MazeGenerator = lazy(() =>
+  import(
+    /* webpackPreload: true */ /* webpackChunkName: "MazeGenerator" */ '@components/MazeGenerator'
+  )
+)
 
 const routes = [
   {
@@ -9,7 +23,7 @@ const routes = [
       {
         component: Landing,
         path: '/',
-        exact: true,
+        exact: true
       },
       {
         component: MazeGenerator,

@@ -1,6 +1,6 @@
-import githubSvg from 'src/assets/svg/github.svg'
-import linkedinSvg from 'src/assets/svg/linkedin.svg'
-import twitterSvg from 'src/assets/svg/twitter.svg'
+import githubSvg from '@src/assets/svg/github.svg'
+import linkedinSvg from '@src/assets/svg/linkedin.svg'
+import twitterSvg from '@src/assets/svg/twitter.svg'
 import SocialLink from './SocialLink'
 
 const Footer = () => {
