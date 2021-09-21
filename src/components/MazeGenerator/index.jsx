@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { saveAs } from 'file-saver'
+import Select from 'react-select'
 
 import MazeGrid from './RecursiveBacktracking'
 
 import CanvasLoop from '@components/CanvasLoop'
 
 const exponentialStep = [8, 16, 32, 64, 128]
-const saveAsOptions = ['json', 'png', 'svg']
+const saveAsOptions = ['json', 'png', 'jpg']
+const canvasSize = 512
 
 const MazeGenerator = () => {
   const canvasRef = useRef(null)
@@ -15,6 +17,9 @@ const MazeGenerator = () => {
   const [cellSize, setCellSize] = useState(2)
   const [isExportable, setIsExportable] = useState(false)
   const [exportMode, setExportMode] = useState('jpg')
+  const [gridSize, setGridSize] = useState(
+    canvasSize / exponentialStep[cellSize - 1]
+  )
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -43,12 +48,14 @@ const MazeGenerator = () => {
   const onResizeGrid = e => {
     e.preventDefault()
     setCellSize(e.currentTarget.value)
+    let parsedValue = parseInt(e.currentTarget.value, 10)
+    setGridSize(canvasSize / exponentialStep[parsedValue - 1])
   }
 
   const exportGrid = e => {
     const data = mazeGrid.export()
     if (mazeGrid.hasFinished && isExportable) {
-      if(exportMode === 'json'){
+      if (exportMode === 'json') {
         // const blob = new Blob([JSON.stringify(data)], {
         //   type: 'text/plain;charset=utf-8'
         // })
@@ -58,12 +65,15 @@ const MazeGenerator = () => {
           saveAs(blob, `maze-${data.id}.${exportMode}`)
         })
       }
-
     }
   }
 
+  const handleInput = value => {
+    setExportMode(value)
+  }
+
   return (
-    <div>
+    <div className='flex flex-col gap-5'>
       <CanvasLoop
         width={512}
         height={512}
@@ -74,26 +84,45 @@ const MazeGenerator = () => {
         resetText={'Reset Maze'}
         setIsExportable={setIsExportable}
       />
-      <label htmlFor='cell-size'>{exponentialStep[cellSize - 1]}</label>
-      <input
-        type='range'
-        name='cell-size'
-        id='cell-size'
-        min={1}
-        max={5}
-        step={1}
-        value={cellSize}
-        onChange={onResizeGrid}
-      />
-      <button
-        disabled={!isExportable}
-        className={`text-white ${
-          isExportable ? 'opacity-100 hover:bg-yellow-600' : 'opacity-50 cursor-not-allowed'
-        } bg-yellow-500 border-0 py-2 px-6 focus:outline-none rounded`}
-        onClick={exportGrid}
-      >
-        Export
-      </button>
+      <div className='flex gap-5'>
+        <div className='flex flex-col'>
+          <label htmlFor='cell-size'>
+            Grid Size: {gridSize}x{gridSize}
+          </label>
+          <input
+            type='range'
+            name='cell-size'
+            id='cell-size'
+            min={1}
+            max={5}
+            step={1}
+            value={cellSize}
+            onChange={onResizeGrid}
+          />
+        </div>
+        <div className='flex gap-5'>
+          <Select
+            className='min-w-full'
+            value={exportMode}
+            onChange={handleInput}
+            options={saveAsOptions.map(item => ({
+              value: item,
+              label: item.toUpperCase()
+            }))}
+          />
+          <button
+            disabled={!isExportable}
+            className={`text-white ${
+              isExportable
+                ? 'opacity-100 hover:bg-yellow-600'
+                : 'opacity-50 cursor-not-allowed'
+            } bg-yellow-500 border-0 py-2 px-6 focus:outline-none rounded`}
+            onClick={exportGrid}
+          >
+            Export
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
