@@ -1,6 +1,8 @@
+import { nanoid } from 'nanoid'
+
 class MazeGrid {
   constructor(canvas, cellSize = 5) {
-    this.id = Math.random().toString(36).substr(2, 5)
+    this.id = nanoid(6)
     this.canvas = canvas
     this.context = canvas.getContext('2d')
     this.cellSize = cellSize
@@ -31,7 +33,10 @@ class MazeGrid {
 
   reset(cellSize) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.id = nanoid(6)
     this.cellSize = cellSize
+    this.columns = Math.floor(this.canvas.width / cellSize)
+    this.rows = Math.floor(this.canvas.height / cellSize)
     this.stack = []
     this.grid = []
     this.currentCell = null
@@ -42,7 +47,7 @@ class MazeGrid {
 
   draw() {
     this.hasStarted = true
-    this.context.fillStyle = 'gray'
+    this.context.fillStyle = 'white'
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
     for (let cell of this.grid) {
       cell.draw(this.context, this.cellSize, !this.hasFinished)
@@ -90,6 +95,16 @@ class MazeGrid {
       next.walls.top = false
     }
   }
+
+  export() {
+    return {
+      id: this.id,
+      cellSize: this.cellSize,
+      rows: this.rows,
+      columns: this.columns,
+      grid: this.grid
+    }
+  }
 }
 class MazeCell {
   constructor(row, column) {
@@ -103,7 +118,7 @@ class MazeCell {
     const x = this.row * cellSize
     const y = this.column * cellSize
     if (render) {
-      context.fillStyle = 'rgba(127, 255, 0, 0.5)'
+      context.fillStyle = 'rgba(245, 158, 11, 1)'
       context.fillRect(x, y, cellSize, cellSize)
     }
   }
@@ -144,7 +159,7 @@ class MazeCell {
     context.stroke()
 
     if (render && this.visited) {
-      context.fillStyle = 'rgba(259,139,32,0.50)'
+      context.fillStyle = 'rgba(245, 158, 11, 0.5)'
       context.fillRect(x, y, cellSize, cellSize)
     }
   }
