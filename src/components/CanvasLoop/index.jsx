@@ -67,7 +67,7 @@ const CanvasLoop = ({
       <div className='flex gap-5'>
         <div className='flex flex-col max-w-sm w-full'>
           <label htmlFor='range'>
-            Frames Per Second:{''}
+            Frames Per Second:{' '}
             <span>
               {parseInt(framesPerSecond, 10) !== 100
                 ? framesPerSecond
@@ -86,7 +86,7 @@ const CanvasLoop = ({
           />
         </div>
         <button
-          className='text-white bg-yellow-500 border-0 py-2 px-6 focus:outline-none hover:bg-yellow-600 rounded'
+          className='text-white bg-yellow-500 border-0 py-2 px-6 focus:outline-none hover:bg-yellow-600 rounded whitespace-nowrap'
           onClick={redrawCanvas}
         >
           {!isRunning ? drawText : resetText}
