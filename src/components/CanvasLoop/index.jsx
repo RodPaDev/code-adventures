@@ -11,7 +11,8 @@ const CanvasLoop = ({
   draw,
   noLoop = false,
   drawText = 'Draw',
-  resetText = 'Reset'
+  resetText = 'Reset',
+  setIsExportable
 }) => {
   const [framesPerSecond, setFramesPerSecond] = useState(60)
   const [isRunning, setIsRunning ] = useState(false)
@@ -26,11 +27,11 @@ const CanvasLoop = ({
     let hasStarted = false
     let hasFinished = false
     function update(timestamp) {
-      console.log(keepRunning)
+      // console.log(keepRunning)
       if (keepRunning && !hasFinished) {
         requestAnimationFrame(update)
         if (fps != 0 && timestamp - lastTimestamp < 1000 / fps) return
-
+        
         let [isStart, isFinished] = draw()
         hasStarted = isStart
         hasFinished = isFinished
@@ -38,6 +39,7 @@ const CanvasLoop = ({
       } else if (hasStarted && hasFinished) {
         draw()
         keepRunning = false
+        setIsExportable(hasFinished)
       }
     }
     update()
@@ -55,6 +57,7 @@ const CanvasLoop = ({
       reset()
       keepRunning = true
       setIsRunning(true)
+      setIsExportable(false)
       loop(draw, framesPerSecond)
     }
   }
@@ -110,6 +113,7 @@ CanvasLoop.propTypes = {
   resetText: PropTypes.string.isRequired,
   noLoop: PropTypes.bool,
   drawText: PropTypes.string,
+  setIsExportable: PropTypes.func,
   forwardedRef: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Element) })

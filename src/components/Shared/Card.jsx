@@ -1,14 +1,20 @@
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-const Card = ({ path, title, subtitle, imgSrc, description }) => {
+const Card = ({
+  path,
+  title,
+  subtitle,
+  imgSrc = 'https://dummyimage.com/720x400',
+  description
+}) => {
   return (
     <div className='xl:w-1/4 md:w-1/2 p-4'>
       <Link to={path}>
         <div className='bg-gray-100 p-6 rounded-lg'>
           <img
             className='h-40 rounded w-full object-cover object-center mb-6'
-            src='https://dummyimage.com/720x400'
+            src={imgSrc}
             alt='content'
           />
           <h3 className='tracking-widest text-yellow-500 text-xs font-medium title-font'>
