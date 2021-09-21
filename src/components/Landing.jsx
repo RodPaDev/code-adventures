@@ -1,6 +1,8 @@
 import Card from '@components/Shared/Card'
 import { Fragment } from 'react'
 
+import mazePng from '@src/assets/thumbnails/maze.png'
+
 const Landing = () => {
   return (
     <Fragment>
@@ -22,7 +24,7 @@ const Landing = () => {
           path={'/maze-generator'}
           title={'Maze Generator'}
           subtitle={'Generator'}
-          imgSrc={''}
+          imgSrc={mazePng}
           description={
             'Generates a maze that you can export to use in other projects. I created this so that I could use random mazes in Unity'
           }
