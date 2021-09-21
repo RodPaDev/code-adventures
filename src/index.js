@@ -1,17 +1,18 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { renderRoutes } from 'react-router-config'
 
 import './index.css'
 import routes from './routes'
+import LoadingSpinner from './components/Shared/LoadingSpinner'
 
 // import reportWebVitals from './reportWebVitals'
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      {renderRoutes(routes)}
+      <Suspense fallback={<LoadingSpinner />}>{renderRoutes(routes)}</Suspense>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')
