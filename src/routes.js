@@ -7,7 +7,7 @@ const Landing = lazy(() =>
 )
 const App = lazy(() =>
   import(
-    /* webpackPreload: true */ /* webpackChunkName: "App" */ '@components/App'
+    /* webpackPreload: true */ /* webpackChunkName: "App" */ '@src/App'
   )
 )
 const MazeGenerator = lazy(() =>
