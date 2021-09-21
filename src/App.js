@@ -2,6 +2,7 @@ import Navigation from '@components/Navigation'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
 import { renderRoutes } from 'react-router-config'
+import Footer from './components/Shared/Footer'
 
 function App({ route }) {
   return (
@@ -12,6 +13,7 @@ function App({ route }) {
           {renderRoutes(route.routes)}
         </div>
       </section>
+      <Footer />
     </div>
   )
 }
