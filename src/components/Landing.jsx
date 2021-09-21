@@ -46,7 +46,7 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className='mt-8 lg:mt-0 lg:w-1/2'>
+            <div className='hidden mt-8 lg:mt-0 lg:w-1/2 lg:block'>
               <div className='flex items-center justify-center lg:justify-end'>
                 <div className='max-w-lg'>
                   <img
