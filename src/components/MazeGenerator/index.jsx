@@ -55,7 +55,7 @@ const MazeGenerator = () => {
   const exportGrid = e => {
     const data = mazeGrid.export()
     if (mazeGrid.hasFinished && isExportable) {
-      if (exportMode === 'json') {
+      if (exportMode.value === 'json') {
         const blob = new Blob([JSON.stringify(data)], {
           type: 'text/plain;charset=utf-8'
         })
