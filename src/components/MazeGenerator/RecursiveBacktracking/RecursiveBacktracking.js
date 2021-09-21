@@ -67,6 +67,7 @@ class MazeGrid {
       this.currentCell = next
     } else if (this.stack.length > 0) {
       this.currentCell = this.stack.pop()
+      this.currentCell.isBacktracked = true
     }
 
     this.hasFinished =
@@ -112,13 +113,14 @@ class MazeCell {
     this.column = column
     this.walls = { top: true, right: true, bottom: true, left: true }
     this.visited = false
+    this.isBacktracked = false
   }
 
   highlight(context, cellSize, render) {
     const x = this.row * cellSize
     const y = this.column * cellSize
     if (render) {
-      context.fillStyle = 'rgba(245, 158, 11, 1)'
+      context.fillStyle = '#f5650b'
       context.fillRect(x, y, cellSize, cellSize)
     }
   }
@@ -152,6 +154,7 @@ class MazeCell {
     }
 
     context.strokeStyle = 'black'
+    context.lineWidth = 1
     context.beginPath()
     for (const [side, isToDraw] of Object.entries(this.walls)) {
       if (isToDraw) wallLines[side]()
@@ -159,7 +162,9 @@ class MazeCell {
     context.stroke()
 
     if (render && this.visited) {
-      context.fillStyle = 'rgba(245, 158, 11, 0.5)'
+      context.fillStyle = this.isBacktracked
+        ? 'rgba(245, 158, 11, 0.7)'
+        : 'rgba(245, 158, 11, 0.9)'
       context.fillRect(x, y, cellSize, cellSize)
     }
   }
